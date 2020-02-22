@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
 
+import example.com.mytestnoti.Constance;
 import example.com.mytestnoti.Main2Activity;
 import example.com.mytestnoti.MainActivity;
 import example.com.mytestnoti.R;
@@ -53,6 +55,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         final Intent intent = new Intent(this, Main2Activity.class);
         intent.putExtra("title", remoteMessage.getData().get("title"));
         intent.putExtra("body", remoteMessage.getData().get("body"));
+        intent.putExtra("token", remoteMessage.getData().get("token"));
         intent.putExtra("image", remoteMessage.getData().get("image"));
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -138,12 +141,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendRegistrationToServer(String token) {
         Log.d("token", token);
-        final String SUBSCRIBE_TO = "userABC";
+        /*final String SUBSCRIBE_TO = "userABC";
 
         String tokens = FirebaseInstanceId.getInstance().getToken();
 
-        FirebaseMessaging.getInstance().subscribeToTopic(SUBSCRIBE_TO);
+        FirebaseMessaging.getInstance().subscribeToTopic(SUBSCRIBE_TO);*/
         Log.i(TAG, "onTokenRefresh completed with token: " + token);
+
+
+        SharedPreferences sharedPref = getSharedPreferences(Constance.MY_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(Constance.TOKEN, token);
+        editor.commit();
+
+        Log.d("token", "send token: " + token);
     }
 
 }

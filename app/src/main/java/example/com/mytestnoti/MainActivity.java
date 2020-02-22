@@ -3,6 +3,7 @@ package example.com.mytestnoti;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = "NOTIFICATION TAG";
 
     String NOTIFICATION_TITLE;
+    String NOTIFICATION_TOKEN;
     String NOTIFICATION_MESSAGE;
     String NOTIFICATION_BODY;
     String NOTIFICATION_IMAGE = "https://tinyjpg.com/images/social/website.jpg";
@@ -73,23 +75,36 @@ public class MainActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences sharedPref = getSharedPreferences(Constance.MY_PREFS, Context.MODE_PRIVATE);
+                String tokenValue = sharedPref.getString(Constance.TOKEN, "");
+
                 TOPIC = "/topics/userABC"; //topic must match with what the receiver subscribed to
                 NOTIFICATION_TITLE = edtTitle.getText().toString();
                 NOTIFICATION_BODY = edtBody.getText().toString();
+                NOTIFICATION_TOKEN = tokenValue;
+
+
 
                 JSONObject notification = new JSONObject();
                 JSONObject notifcationBody = new JSONObject();
+
                 try {
                     notifcationBody.put("title", NOTIFICATION_TITLE);
                     //notifcationBody.put("message", NOTIFICATION_MESSAGE);
                     notifcationBody.put("body", NOTIFICATION_BODY);
                     notifcationBody.put("image", NOTIFICATION_IMAGE);
 
+                    notifcationBody.put("token", NOTIFICATION_TOKEN);
+                    //Log.d("check","token to send "+tokenValue);
+
 
                     //notification.put("to", TOPIC); // send to TOPIC
 
-                    notification.put("to", TOKEN); // send to Token
+                    notification.put("to", NOTIFICATION_TOKEN); // send to Token
+                    //notification.put("to",TOPIC);
                     notification.put("data", notifcationBody);
+                    //notification.put("data2", notifcationToken);
 
                 } catch (JSONException e) {
                     Log.e(TAG, "onCreate: " + e.getMessage());
